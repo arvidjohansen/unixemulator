@@ -13,8 +13,12 @@ DEBUG = False
 settings = {
     'smallcwd' : True #changes the cwd to only the last dir
 }
+apptranslate = {
+    'nano':'notepad',
+}
 
 def ls(path=None):
+    """List files and folders in given directory"""
     if path == None:
         path = '.'
     if os.path.exists(path):
@@ -26,7 +30,7 @@ def ls(path=None):
 def cd(path):
     """Change directory to path"""
     os.chdir(path)
-    return f'Changed dir: {os.getcwd()}'
+    return ''
 
 def cp(target, destination):
     """Copy file to destination"""
@@ -80,10 +84,49 @@ def exec_command(cmd):
     """Executes a command
     Returns the result"""
     if DEBUG: print(f'exec_commmand: {cmd}')
-    
     exec('global i; i = %s' % cmd)
     global i
     return i
+
+def run(cmd):
+    """Attempts to run the command
+    as a system command"""
+    return os.system(cmd)
+
+
+def decode_command(cmd):
+    """Takes a unix-style command 
+    e.g. ls folder and translates it 
+    to python e.g. ls(folder)"""
+    pycommand = ''
+    if cmd[:2] == './':
+        return run(cmd[2:])
+    decoded = cmd.split(' ')
+    fname = decoded[0]
+    arg1 = False
+    arg2 = False
+    try: arg1 = decoded[1]
+    except IndexError: pass
+    try: arg2 = decoded[2]
+    except IndexError: pass
+    if DEBUG: print(decoded)
+
+    if fname in apptranslate:
+        app = apptranslate[fname]
+        runstr = f'{app} '
+        if arg1: runstr += f'{arg1}'
+        if arg2: runstr += f'{arg2}'
+        return os.system(runstr)
+
+    
+    pycommand = f'{fname}('
+    if arg1: 
+        pycommand += f'"{arg1}"'
+    if arg2:
+        pycommand += f',"{arg2}"'
+    pycommand += f')'
+    if DEBUG: print(f'Returning pycommand: {pycommand}')
+    return pycommand
 
 def getattri(name):
     """getattr in current module
@@ -98,6 +141,24 @@ def _setup():
     global HOSTNAME 
     USER = getuser()
     HOSTNAME = gethostname()
+
+def get_bottom_string():
+    """Returns a bash-style 
+    user@host:current_directory -string"""
+    cwd = pwd() 
+    if not settings['smallcwd']:
+        bottom_str = f'{USER}@{HOSTNAME}:{cwd}$'
+    else:
+        cwd = cwd.split('\\')[-1]
+        bottom_str = f'{USER}@{HOSTNAME}:{cwd}$'
+    return bottom_str
+
+def debug():
+    """Turns on and off debug-mode"""
+    global DEBUG
+    DEBUG = not DEBUG
+    return DEBUG
+
 def main():
     _setup()
     print('Welcome to unix emulator')
@@ -109,30 +170,35 @@ def main():
         return 
 
     while(True):
-        cwd = pwd() #current working dir = print working dir
-        if not settings['smallcwd']:
-            bottom_str = f'{USER}@{HOSTNAME}:{cwd}$'
-        else:
-            cwd = cwd.split('\\')[-1]
-            bottom_str = f'{USER}@{HOSTNAME}:{cwd}$'
+        bottom_str = get_bottom_string()
 
-        cmd = input(bottom_str)
+        cmd = ''
+
+        while cmd == '':
+            cmd = input(bottom_str)
 
         if DEBUG: print(f'cmd: {cmd}')
 
         try:
+            cmd = decode_command(cmd)
             res = exec_command(cmd)
         except SyntaxError as e:
             res = e
+        except TypeError as e:
+            res = e
         except Exception as e:
             res = e
+        if DEBUG:
+                print(f'Result ({type(res)}): {res}')
+        
         if isinstance(res,types.FunctionType) or \
         isinstance(res,types.BuiltinFunctionType):
             res = res()
             print(res)
         else:
-            if DEBUG: print(f'Else - cmd: {cmd}\nres:{res}')
-            print(res)
+            if DEBUG: print(f'Else - cmd: {cmd} res:{res}')
+            if res != '':
+                print(res)
                 
 
 if __name__ == '__main__':
