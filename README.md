@@ -4,28 +4,39 @@
 just for fun
 
 ```python
->>> python emulator.py
-C:\Users\arvidj\Desktop\git\unixemulator>python emulator.py
+C:\Users\arvidj\Desktop\git\unixemulator3>bash.py
 'Welcome to unix emulator'
-arvidj@DESKTOP-K1:unixemulator$ls
+arvidj@DEK7:unixemulator3$ls
 ['.git',
  '.vscode',
+ 'bash.py',
+ 'echo',
  'emulator.py',
  'README.md',
  'setup.py',
+ 'somefolder',
  '__init__.py',
  '__pycache__']
-arvidj@DESKTOP-K1:unixemulator$mkdir('somefolder')
-'Successfully created folder: somefolder'
+arvidj@DEK7:unixemulator3$cd ..
+arvidj@DEK7:git$cd ..
+arvidj@DEK7:Desktop$mkdir mydir
+'Successfully created folder: mydir'
 None
-arvidj@DESKTOP-K1:unixemulator$cd('somefolder')
-'Changed dir: C:\\Users\\arvidj\\Desktop\\git\\unixemulator\\somefolder'
-arvidj@DESKTOP-K1:somefolder$echo('some content','some filename')
+arvidj@DEK7:Desktop$cd mydir
+arvidj@DEK7:mydir$echo sometext somefile
 None
-arvidj@DESKTOP-K1:somefolder$ls
-['some filename']
-arvidj@DESKTOP-K1:somefolder$cat('some filename')
-'some content'
-arvidj@DESKTOP-K1:somefolder$
+arvidj@DEK7:mydir$ls
+['somefile']
+arvidj@DEK7:mydir$cp somefile somefile2
+'somefile2'
+arvidj@DEK7:mydir$cat somefile2
+'sometext'
+arvidj@DEK7:mydir$pwd
+'C:\\Users\\arvidj\\Desktop\\mydir'
+arvidj@DEK7:mydir$mv somefile helloface
+'helloface'
+arvidj@DEK7:mydir$ls
+['helloface', 'somefile2']
+arvidj@DEK7:mydir$
  ```
 
