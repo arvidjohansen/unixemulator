@@ -3,7 +3,7 @@
 
 just for fun
 
-```python
+```bash
 C:\Users\arvidj\Desktop\git\unixemulator3>bash.py
 'Welcome to unix emulator'
 arvidj@DEK7:unixemulator3$ls
